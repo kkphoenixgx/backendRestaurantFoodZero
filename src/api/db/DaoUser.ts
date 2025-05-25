@@ -2,6 +2,7 @@ import ConnectionFactory from "./ConnectionFactory";
 import { Connection } from "mysql2/promise";
 
 import User from "../model/User";
+import { IAuthenticationResponse } from "../../interfaces/IAuthenticationResponse";
 
 export default class DaoUser {
 
@@ -28,6 +29,20 @@ export default class DaoUser {
       row.phone,
       row.role,
     );
+  }
+
+  public async getUserHashAndId(email: string): Promise<IAuthenticationResponse> {
+    const [rows]: any = await this.connection.execute(
+      "SELECT password, id FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (rows.length === 0) throw new Error("Usuário não encontrado");
+
+    return {
+      hash: rows[0].password,
+      id: rows[0].id
+    };
   }
 
   public async listUsers(): Promise<User[]> {

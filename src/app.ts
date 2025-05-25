@@ -22,7 +22,8 @@ app.get<{}, MessageResponse>('/', (req, res) => {
   });
 });
 
-app.use('/api/', api);
+app.use('/api', api);
+app.use('/uploads', express.static('public/uploads'));
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

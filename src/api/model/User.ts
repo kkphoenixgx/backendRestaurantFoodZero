@@ -7,7 +7,7 @@ export default class User {
     private _name: string,
     private _email: string,
     private _senha: string,
-    private _userImagePath: string,
+    private _userImagePath: string | null,
     private _phone: string,
     private _role: string,    
   ) { }
@@ -35,7 +35,7 @@ export default class User {
     this._phone = value;
   }
 
-  public get userImagePath(): string {
+  public get userImagePath(): string | null {
     return this._userImagePath;
   }
   public set userImagePath(value: string) {
