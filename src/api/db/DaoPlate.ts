@@ -28,11 +28,13 @@ export default class DaoPlate {
     );
   }
 
-  public async postPlate(plate: Plate): Promise<void> {
-    await this.connection.execute(
+  public async postPlate(plate: Plate): Promise<number> {
+    const [result] = await this.connection.execute(
       'INSERT INTO plates (name, price, description, image_path) VALUES (?, ?, ?, ?)',
       [plate.name, plate.value, plate.description, plate.imagePath]
     );
+
+    return (result as any).insertId;
   }
 
   public async updatePlate(id: number, newPlate: Plate): Promise<void> {

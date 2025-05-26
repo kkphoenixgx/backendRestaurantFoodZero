@@ -2,7 +2,7 @@
 
 ## Tasks
 
-[ ] - Criar as triggers que vão atualizar os objetos relacionais
+[ Possiveis bugs ] - objetos relacionais
 
 ## Tasks completas
 

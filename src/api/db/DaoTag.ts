@@ -26,12 +26,26 @@ export default class DaoTag {
     return (rows as any[]).map(row => new Tag(row.id, row.name));
   }
 
-  public async postTag(tag: Tag): Promise<void> {
-    await this.connection.execute(
+  public async getTagByName(name: string): Promise<Tag | null> {
+    const [rows] = await this.connection.execute(
+      `SELECT id, name FROM tags WHERE name = ?`,
+      [name]
+    );
+    const result = (rows as any[])[0];
+    if (!result) return null;
+    return new Tag(result.id, result.name);
+  }
+  
+
+  public async postTag(tag: Tag): Promise<number> {
+    const [result] = await this.connection.execute(
       `INSERT INTO tags (name) VALUES (?)`,
       [tag.name]
     );
+      
+    return (result as any).insertId;
   }
+  
 
   public async updateTag(id: number, newTag: Tag): Promise<void> {
     await this.connection.execute(

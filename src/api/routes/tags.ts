@@ -27,7 +27,7 @@ router.get('/', async (_req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const body = req.body;
-    const tag = new Tag(0, body.name);
+    const tag = new Tag(body.name, 0);
     await dao.postTag(tag);
     res.status(201).json({ message: 'Tag created successfully' });
   } catch (err) {
@@ -39,7 +39,7 @@ router.put('/:id', async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     const body = req.body;
-    const updatedTag = new Tag(id, body.name);
+    const updatedTag = new Tag(body.name, id);
     await dao.updateTag(id, updatedTag);
     res.json({ message: 'Tag updated successfully' });
   } catch (err) {

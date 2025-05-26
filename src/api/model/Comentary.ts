@@ -1,10 +1,11 @@
 export default class Comentary {
- 
 
   constructor(
     private _id: number,
     private _date: Date,
     private _description: string,
+    private _post_id: number,
+    private _user_id: number
   ) {}
 
   // ----------- Getters and Setters -----------
@@ -26,6 +27,18 @@ export default class Comentary {
   }
   public set description(value: string) {
     this._description = value;
+  }
+  public get user_id(): number {
+    return this._user_id;
+  }
+  public set user_id(value: number) {
+    this._user_id = value;
+  }
+  public get post_id(): number {
+    return this._post_id;
+  }
+  public set post_id(value: number) {
+    this._post_id = value;
   }
 
 }

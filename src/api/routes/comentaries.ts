@@ -2,14 +2,17 @@ import { Router, Request, Response } from 'express';
 
 import DaoComentary from '../db/DaoComentary';
 import Comentary from '../model/Comentary';
-import Post from '../model/Post';
+
 import User from '../model/User';
+import DaoPost from '../db/DaoPost';
 
 const router = Router();
 const dao = new DaoComentary();
+const daoPost = new DaoPost();
 
 (async () => {
   await dao.initConnection();
+  await daoPost.initConnection();
 })();
 
 router.get('/:id', async (req: Request, res: Response) => {
@@ -29,9 +32,20 @@ router.get('/', async (_req: Request, res: Response) => {
 
 router.get('/post/:postId', async (req: Request, res: Response) => {
   const postId = parseInt(req.params.postId);
-  const post = new Post(postId, new Date(), ''); // só o id importa para buscar
-  const comentaries = await dao.getComentariesFromPost(post);
-  res.json(comentaries);
+
+  try {
+    const postData = await daoPost.getPost(postId);
+
+    if (!postData) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const comentaries = await dao.getComentariesFromPost(postData);
+    res.json(comentaries);
+
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error', details: err instanceof Error ? err.message : err });
+  }
 });
 
 router.get('/user/:userId', async (req: Request, res: Response) => {
@@ -48,7 +62,9 @@ router.post('/', async (req: Request, res: Response) => {
     const comentary = new Comentary(
       0, // id autogerado
       new Date(body.date),
-      body.description
+      body.description,
+      body.postId,
+      body.userId
     );
     await dao.postComentary(comentary);
     res.status(201).json({ message: 'Comentary created successfully' });
@@ -65,7 +81,9 @@ router.put('/:id', async (req: Request, res: Response) => {
     const updatedComentary = new Comentary(
       id,
       new Date(body.date),
-      body.description
+      body.description,
+      body.postId,
+      body.userId
     );
     await dao.updateComentary(id, updatedComentary);
     res.json({ message: 'Comentary updated successfully' });

@@ -1,8 +1,8 @@
 export default class Tag {
 
   constructor(
-    private _id: number,
     private _name: string,
+    private _id: number = 0,
   ) {}
 
   // ----------- Getters and Setters -----------
