@@ -8,6 +8,7 @@ export default class Post {
     private _id: number,
     private _date: Date,
     private _description: string,
+    private _tittle: string,
     private _user: User,
     private _tags: Tag[],
     private _comentaries: Comentary[] = [],
@@ -53,6 +54,12 @@ export default class Post {
   }
   public set user(value: User) {
     this._user = value;
+  }
+  public get tittle(): string {
+    return this._tittle;
+  }
+  public set tittle(value: string) {
+    this._tittle = value;
   }
   
 

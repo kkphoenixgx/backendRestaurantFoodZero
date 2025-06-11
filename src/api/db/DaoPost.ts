@@ -19,7 +19,7 @@ export default class DaoPost {
 
   public async getPost(id: number): Promise<Post | null> {
     const [rows] = await this.connection.execute(
-      `SELECT p.id, p.created_at, p.description,
+      `SELECT p.id, p.created_at, p.description, p.tittle,
               u.id as user_id, u.name, u.email, u.password, u.user_image, u.phone, u.role
          FROM posts p
     LEFT JOIN users u ON p.user_id = u.id
@@ -45,12 +45,13 @@ export default class DaoPost {
       tagIds.map(tagId => this.daoTag.getTag(tagId))
     ).then(t => t.filter(tag => tag !== null) as Tag[]);
 
-    return new Post(result.id, new Date(result.created_at), result.description, user, tags);
+    return new Post(result.id, new Date(result.created_at), result.description, result.tittle, user, tags);
   }
 
   public async listPosts(): Promise<Post[]> {
+
     const [rows] = await this.connection.execute(
-      `SELECT p.id, p.created_at, p.description,
+      `SELECT p.id, p.created_at, p.description, p.tittle,
               u.id as user_id, u.name, u.email, u.password, u.user_image, u.phone, u.role
          FROM posts p
     LEFT JOIN users u ON p.user_id = u.id`
@@ -76,7 +77,7 @@ export default class DaoPost {
       ).then(t => t.filter(tag => tag !== null) as Tag[]);
 
       posts.push(
-        new Post(row.id, new Date(row.created_at), row.description, user, tags)
+        new Post(row.id, new Date(row.created_at), row.description, row.tittle, user, tags)
       );
     }
 
@@ -86,17 +87,17 @@ export default class DaoPost {
   
   public async postPost(post: Post): Promise<number> {
     await this.connection.beginTransaction();
-  
+
     try {
       const formattedDate = post.date.toISOString().slice(0, 19).replace('T', ' ');
-  
+
       const [result] = await this.connection.execute(
-        `INSERT INTO posts (created_at, description, user_id) VALUES (?, ?, ?)`,
-        [formattedDate, post.description, post.user.id]
+        `INSERT INTO posts (created_at, description, tittle, user_id) VALUES (?, ?, ?, ?)`,
+        [formattedDate, post.description, post.tittle, post.user.id]
       );
-  
+
       const postId = (result as any).insertId;
-  
+
       for (let tagData of post.tags) {
         let tag = await this.daoTag.getTagByName(tagData.name);
   
@@ -124,8 +125,8 @@ export default class DaoPost {
 
   public async updatePost(id: number, newPost: Post): Promise<void> {
     await this.connection.execute(
-      `UPDATE posts SET description = ? WHERE id = ?`,
-      [newPost.description, id]
+      `UPDATE posts SET description = ?, tittle = ? WHERE id = ?`,
+      [newPost.description, newPost.tittle, id]
     );
 
     await this.daoPostTag.deleteTagsForPost(id);

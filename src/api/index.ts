@@ -23,7 +23,7 @@ router.use('/reservations', reservation);
 router.use('/categories', categories);
 router.use('/comentaries', comentaries);
 router.use('/plates', plates);
-router.use('/psots', posts);
+router.use('/posts', posts);
 router.use('/tags', tags);
 
 

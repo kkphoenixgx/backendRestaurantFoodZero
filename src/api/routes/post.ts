@@ -40,12 +40,13 @@ router.post('/', async (req: Request, res: Response) => {
       body.user.role
     );
 
-    const tags = (body.tags || []).map((tag: any) => new Tag(tag.id ?? 0, tag.name));
+    const tags = (body.tags || []).map((tag: any) => new Tag(tag.name, tag.id ?? 0));
 
     const post = new Post(
       0,
       new Date(body.date),
       body.description,
+      body.tittle,
       user,
       tags
     );
@@ -77,6 +78,7 @@ router.put('/:id', async (req: Request, res: Response) => {
       id,
       new Date(body.date),
       body.description,
+      body.tittle,
       user,
       tags
     );
