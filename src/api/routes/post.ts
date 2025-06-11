@@ -40,7 +40,7 @@ router.post('/', async (req: Request, res: Response) => {
       body.user.role
     );
 
-    const tags = (body.tags || []).map((tag: any) => new Tag(tag.name, tag.id ?? 0));
+    const tags = (body.tags || []).map((tag: any) => new Tag(tag.id ?? 0, tag.name));
 
     const post = new Post(
       0,

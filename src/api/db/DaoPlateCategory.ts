@@ -7,6 +7,9 @@ export default class DaoPlateCategory {
   public async initConnection() {
     this.connection = await ConnectionFactory.createConnection();
   }
+  public async initConnectionWithConnection(connection: Connection) {
+    this.connection = connection;
+  }
 
   public async associate(plateId: number, categoryId: number): Promise<void> {
     await this.connection.execute(

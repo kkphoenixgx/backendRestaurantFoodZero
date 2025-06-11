@@ -8,6 +8,9 @@ export default class DaoTag {
   public async initConnection() {
     this.connection = await ConnectionFactory.createConnection();
   }
+  public async initConnectionWithConnection(connection: Connection) {
+    this.connection = connection;
+  }
 
   public async getTag(id: number): Promise<Tag | null> {
     const [rows] = await this.connection.execute(

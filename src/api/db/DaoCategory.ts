@@ -8,6 +8,9 @@ export default class DaoCategory {
   public async initConnection() {
     this.connection = await ConnectionFactory.createConnection();
   }
+  public async initConnectionWithConnection(connection: Connection) {
+    this.connection = connection;
+  }
 
   public async getCategory(id: number): Promise<Category | null> {
     const [rows] = await this.connection.execute(

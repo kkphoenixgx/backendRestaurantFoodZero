@@ -58,17 +58,15 @@ router.post('/', async (req: Request, res: Response) => {
       body.imagePath
     );
 
-    const plateId = await plateDao.postPlate(plate);
-
-    if (Array.isArray(body.categoryIds)) {
-      for (const categoryId of body.categoryIds) {
-        await plateCategoryDao.associate(plateId, categoryId);
-      }
-    }
+    const plateId = await plateDao.postPlate(plate, body.categoryIds ? body.categoryIds : []);
 
     res.status(201).json({ message: 'Plate created successfully', plateId });
   } catch (err) {
-    res.status(400).json({ error: 'Invalid data', details: err });
+    console.error('Erro ao criar prato:', err);
+    res.status(400).json({ 
+      error: 'Invalid data', 
+      details: err instanceof Error ? { message: err.message, stack: err.stack } : err 
+    });
   }
 });
 

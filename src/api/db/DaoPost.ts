@@ -13,8 +13,11 @@ export default class DaoPost {
 
   public async initConnection() {
     this.connection = await ConnectionFactory.createConnection();
-    await this.daoTag.initConnection();
-    await this.daoPostTag.initConnection();
+    await this.daoTag.initConnectionWithConnection(this.connection);
+    await this.daoPostTag.initConnectionWithConnection(this.connection);
+  }
+  public async initConnectionWithConnection(connection: Connection) {
+    this.connection = connection;
   }
 
   public async getPost(id: number): Promise<Post | null> {
@@ -89,36 +92,32 @@ export default class DaoPost {
     await this.connection.beginTransaction();
 
     try {
-      const formattedDate = post.date.toISOString().slice(0, 19).replace('T', ' ');
 
+      const formattedDate = post.date.toISOString().slice(0, 19).replace('T', ' ');
       const [result] = await this.connection.execute(
         `INSERT INTO posts (created_at, description, tittle, user_id) VALUES (?, ?, ?, ?)`,
         [formattedDate, post.description, post.tittle, post.user.id]
       );
-
       const postId = (result as any).insertId;
 
       for (let tagData of post.tags) {
         let tag = await this.daoTag.getTagByName(tagData.name);
-  
+        let tagId: number;
         if (!tag) {
-          let tagId = await this.daoTag.postTag(new Tag(tagData.name, 0));
-          await this.daoPostTag.linkPostToTag(postId, tagId);
-        
+          tagId = await this.daoTag.postTag(new Tag(tagData.name, 0));
         } else {
-          await this.daoPostTag.linkPostToTag(postId, tag.id);
+          tagId = tag.id;
         }
-      
+        await this.daoPostTag.linkPostToTag(postId, tagId);
       }
-  
+
       await this.connection.commit();
       return postId;
-  
+
     } catch (error) {
       await this.connection.rollback();
       throw error;
     }
-    
   }
   
 
