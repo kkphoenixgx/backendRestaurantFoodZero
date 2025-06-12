@@ -99,6 +99,7 @@ router.post('/login', async (req, res) => {
 });
 
 
+
 router.put('/:id', upload.single('foto'), async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
@@ -110,19 +111,26 @@ router.put('/:id', upload.single('foto'), async (req: Request, res: Response) =>
 
     let imagePath: string | null = oldUser.userImagePath;
 
-    
-    if (!userImagePath) {
-      deleteOldImage(oldUser.userImagePath);
-      imagePath = null;
+
+    if (typeof userImagePath !== 'undefined') {
+
+      if (userImagePath === '' || userImagePath === null) {
+        deleteOldImage(oldUser.userImagePath);
+        imagePath = null;
+      }
+
     }
 
-    
     if (file) {
       deleteOldImage(oldUser.userImagePath);
       imagePath = `/uploads/${file.filename}`;
     }
 
-    const cryptedPassword = await PasswordService.encryptPassword(senha);
+    // Só criptografa a senha se ela foi enviada (não sobrescreve com senha vazia)
+    let cryptedPassword = oldUser.senha;
+    if (senha && senha.trim() !== '') {
+      cryptedPassword = await PasswordService.encryptPassword(senha);
+    }
 
     const updatedUser = new User(id, name, email, cryptedPassword, imagePath, phone, role);
     await dao.updateUser(id, updatedUser);
